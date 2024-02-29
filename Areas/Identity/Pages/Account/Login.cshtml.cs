@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using TecnoDiversity.Data;
 
 namespace TecnoDiversity.Areas.Identity.Pages.Account
 {
@@ -21,11 +22,15 @@ namespace TecnoDiversity.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _context = context;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -114,6 +119,14 @@ namespace TecnoDiversity.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    var UsuariosEnDb = _context.Users.ToList().Count;
+                    if (UsuariosEnDb == 1)
+                    {
+                        var SuperUser = _context.Users.FirstOrDefault();
+                        var RolAdmin = _context.Roles.SingleOrDefault(r => r.Name == "Administrador");
+                        var asignarRolResult = await _userManager.AddToRoleAsync(SuperUser, RolAdmin.Name);
+                    }
+
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
