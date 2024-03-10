@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TecnoDiversity.Data;
 using TecnoDiversity.Models;
+using TecnoDiversity.Utils;
 
 
 namespace TecnoDiversity.Controllers;
@@ -14,11 +15,13 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly ApplicationDbContext _context;
     private readonly RoleManager<IdentityRole> _rolManager;
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, RoleManager<IdentityRole> rolManager, UserManager<IdentityUser> userManager)
+    private readonly IEmailSender _emailSender;
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, RoleManager<IdentityRole> rolManager, UserManager<IdentityUser> userManager, IEmailSender emailSender)
     {
         _logger = logger;
         _context = context;
         _rolManager = rolManager;
+        _emailSender = emailSender;
     }
 
     public async Task<JsonResult> CargarRolesDb()
@@ -54,6 +57,13 @@ public class HomeController : Controller
         {
             await CargarRolesDb();
         }
+
+        var receiver = "nemaldonado663@gmail.com";
+        var subject = "Prueba de correo";
+        var message = "Hola, este es un correo de prueba";
+        
+        await _emailSender.SendEmailAsync(receiver, subject, message);
+
         return View();
     }
 

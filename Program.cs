@@ -1,8 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TecnoDiversity.Utils;
 using TecnoDiversity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Add services to Email
+
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
