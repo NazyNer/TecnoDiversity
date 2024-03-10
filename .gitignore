@@ -52,3 +52,4 @@ dkms.conf
 *bin
 *vscode
 obj
+*node_modules
