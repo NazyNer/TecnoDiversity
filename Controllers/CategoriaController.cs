@@ -21,7 +21,6 @@ public class CategoriaController : Controller{
     return View();
   }
   
-
   public JsonResult BuscarCategorias(){
     var categorias = _context.Categorias.ToList();
     return Json(categorias);
